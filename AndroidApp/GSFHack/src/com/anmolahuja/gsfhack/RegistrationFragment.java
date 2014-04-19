@@ -104,18 +104,33 @@ public class RegistrationFragment extends Fragment
 							break;
 						case 2:
 							// TODO show warning about call rates
-							try
-							{
-								Intent callIntent = new Intent(
-										Intent.ACTION_CALL );
-								callIntent.setData( Uri
-										.parse( "tel:+911130715373" ) );
-								startActivity( callIntent );
-							}
-							catch( ActivityNotFoundException e )
-							{
-								e.printStackTrace();
-							}
+							beginUpload( new RegistrationListener(){
+								@Override
+								public void onUploadFinished( final
+										boolean registrationSuccessful )
+								{
+									getActivity().runOnUiThread( new Runnable()
+									{
+										@Override
+										public void run()
+										{
+											if( !registrationSuccessful )
+												return;
+											try
+											{
+												Intent callIntent = new Intent(
+														Intent.ACTION_CALL );
+												callIntent.setData( Uri
+														.parse( "tel:+911130715373" ) );
+												startActivity( callIntent );
+											}
+											catch( ActivityNotFoundException e )
+											{
+												e.printStackTrace();
+											}
+										}} );
+										}
+									} );
 							break;
 
 						case 3:
@@ -145,14 +160,14 @@ public class RegistrationFragment extends Fragment
 														// N-TODO
 														break;
 													}
-													beginUpload();
+													beginUpload( null );
 													dialog.dismiss();
 												}
 											} )
 									.show();
 							return;
 						}
-						beginUpload();
+						beginUpload( null );
 					}
 				} );
 		return rootView;
@@ -226,22 +241,22 @@ public class RegistrationFragment extends Fragment
 						Toast.LENGTH_LONG ).show();
 				return;
 			}
-			beginUpload();
+			beginUpload( null );
 			break;
 		}
 	}
 
-	private void beginUpload()
+	private void beginUpload( final RegistrationListener listener )
 	{
 		pd = new ProgressDialog( getActivity() );
 		pd.setTitle( "Registering..." );
 		pd.show();
 		Thread t = new Thread( new Runnable()
 		{
-
 			@Override
 			public void run()
 			{
+				boolean successful = false;
 				HttpClient httpclient = new DefaultHttpClient();
 				HttpPost httppost = new HttpPost(
 						"http://107.161.27.22:5000/api/upload" );
@@ -274,7 +289,7 @@ public class RegistrationFragment extends Fragment
 					}
 					if( s.contains( "success" ) ) // hammad?
 					{
-
+						successful = true;
 					}
 					else
 					{
@@ -288,8 +303,17 @@ public class RegistrationFragment extends Fragment
 				catch( IOException e )
 				{
 				}
+				finally
+				{
+					if( listener != null )
+						listener.onUploadFinished( successful );
+				}
 			}
 		} );
 		t.start();
+	}
+	private static interface RegistrationListener
+	{
+		public void onUploadFinished( boolean registrationSuccessful );
 	}
 }
