@@ -57,7 +57,8 @@ def upload():
             f.save(os.path.join(upload_folder, filename))
         output = {
             'name': filename,
-            'status': 'success'
+            'status': 'success',
+	    'url' : 'http://107.161.27.22/gsfhack/gsfhack_flaskapp/app/uploads/'+str(filename)
         }
         files.append(output)
     return jsonify(files=files)
