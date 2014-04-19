@@ -13,6 +13,7 @@ def index():
     return "Hello, World!"
 
 
+
 @app.route('/api/', methods=['GET'])
 @app.route('/api', methods=['GET'])
 def index():
@@ -45,7 +46,7 @@ def ProcessKooKooResponse():
 @app.route('/api/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
-        upload_folder = "/home/engineer/htdocs/gsfhack/gsfhack_flaskapp/app/uploads/"
+        upload_folder = os.getcwd()+"/uploads/"
         if not os.path.exists(upload_folder):
             os.mkdir(upload_folder)
             print upload_folder
@@ -61,4 +62,8 @@ def upload():
         files.append(output)
     return jsonify(files=files)
 
+@app.route('/api/test', methods=['GET'])
+@app.route('/api/test/', methods=['GET'])
+def testform():
+	return '<form enctype="multipart/form-data" action="/api/upload" method="POST">Please choose a file: <input name="file" type="file" /><br /><input type="submit" value="Upload" /></form>'
 
