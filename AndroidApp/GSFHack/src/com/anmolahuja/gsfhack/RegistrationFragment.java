@@ -48,128 +48,107 @@ public class RegistrationFragment extends Fragment
 	}
 
 	@Override
-	public View onCreateView( LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState )
+	public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState )
 	{
-		final View rootView = inflater.inflate( R.layout.registration_activity,
-				container, false );
-		final Spinner spinner = (Spinner) rootView
-				.findViewById( R.id.spn_profilemethod );
-		final ArrayAdapter<CharSequence> adapter = ArrayAdapter
-				.createFromResource( getActivity(), R.array.profile_options,
-						android.R.layout.simple_spinner_item );
+		final View rootView = inflater.inflate( R.layout.registration_activity, container, false );
+		final Spinner spinner = (Spinner) rootView.findViewById( R.id.spn_profilemethod );
+		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( getActivity(),
+				R.array.profile_options, android.R.layout.simple_spinner_item );
 		adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item );
 		spinner.setAdapter( adapter );
 		spinner.setSelection( 0 );
 
-		( (Button) rootView.findViewById( R.id.btn_submit ) )
-				.setOnClickListener( new OnClickListener()
+		( (Button) rootView.findViewById( R.id.btn_submit ) ).setOnClickListener( new OnClickListener()
+		{
+
+			@Override
+			public void onClick( View v )
+			{
+				name = ( (EditText) rootView.findViewById( R.id.et_name ) ).getText().toString();
+				email = ( (EditText) rootView.findViewById( R.id.et_email ) ).getText().toString();
+				mobile = ( (EditText) rootView.findViewById( R.id.et_mobileno ) ).getText().toString();
+
+				if( name == null || name.isEmpty() || email == null || email.isEmpty() || mobile == null
+						|| mobile.isEmpty() )
 				{
-
-					@Override
-					public void onClick( View v )
+					Toast.makeText( getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT ).show();
+					return;
+				}
+				switch( spinner.getSelectedItemPosition() )
+				{
+				case 0:
+					// Social TODO
+					break;
+				case 1:
+					// PDF
+					// C-TODO hardcoding for testing
+					m_filePath = "/sdcard/xkcd-24.jpeg";
+					/*
+					 * if (m_filePath == null || m_filePath.isEmpty()) {
+					 * showFileChooser(); return; }
+					 */
+					break;
+				case 2:
+					// TODO show warning about call rates
+					beginUpload( new RegistrationListener()
 					{
-						name = ( (EditText) rootView
-								.findViewById( R.id.et_name ) ).getText()
-								.toString();
-						email = ( (EditText) rootView
-								.findViewById( R.id.et_email ) ).getText()
-								.toString();
-						mobile = ( (EditText) rootView
-								.findViewById( R.id.et_mobileno ) ).getText()
-								.toString();
-
-						if( name == null || name.isEmpty() || email == null
-								|| email.isEmpty() || mobile == null
-								|| mobile.isEmpty() )
+						@Override
+						public void onUploadFinished( final boolean registrationSuccessful )
 						{
-							Toast.makeText( getActivity(),
-									"Please fill in all the fields",
-									Toast.LENGTH_SHORT ).show();
-							return;
-						}
-						switch( spinner.getSelectedItemPosition() )
-						{
-						case 0:
-							// Social TODO
-							break;
-						case 1:
-							// PDF
-							// C-TODO hardcoding for testing
-							m_filePath = "/sdcard/xkcd-24.jpeg";
-							/*
-							 * if (m_filePath == null || m_filePath.isEmpty()) {
-							 * showFileChooser(); return; }
-							 */
-							break;
-						case 2:
-							// TODO show warning about call rates
-							beginUpload( new RegistrationListener(){
+							getActivity().runOnUiThread( new Runnable()
+							{
 								@Override
-								public void onUploadFinished( final
-										boolean registrationSuccessful )
+								public void run()
 								{
-									getActivity().runOnUiThread( new Runnable()
+									if( !registrationSuccessful )
+										return;
+									try
+									{
+										Intent callIntent = new Intent( Intent.ACTION_CALL );
+										callIntent.setData( Uri.parse( "tel:+911130715373" ) );
+										startActivity( callIntent );
+									}
+									catch( ActivityNotFoundException e )
+									{
+										e.printStackTrace();
+									}
+								}
+							} );
+						}
+					} );
+					break;
+
+				case 3:
+					// pDF Pic Export
+					AlertDialog.Builder b = new AlertDialog.Builder( getActivity() );
+					b.setTitle( "Pick a source" )
+							.setSingleChoiceItems( new String[] { "Camera", "Gallerr" }, 0,
+									new DialogInterface.OnClickListener()
 									{
 										@Override
-										public void run()
+										public void onClick( DialogInterface dialog, int which )
 										{
-											if( !registrationSuccessful )
-												return;
-											try
+											Intent intent = new Intent();
+											switch( which )
 											{
-												Intent callIntent = new Intent(
-														Intent.ACTION_CALL );
-												callIntent.setData( Uri
-														.parse( "tel:+911130715373" ) );
-												startActivity( callIntent );
+											case 0:
+												// camera
+												// N-TODO
+												break;
+											case 1:
+												// gallery
+												// N-TODO
+												break;
 											}
-											catch( ActivityNotFoundException e )
-											{
-												e.printStackTrace();
-											}
-										}} );
+											beginUpload( null );
+											dialog.dismiss();
 										}
-									} );
-							break;
-
-						case 3:
-							// pDF Pic Export
-							AlertDialog.Builder b = new AlertDialog.Builder(
-									getActivity() );
-							b.setTitle( "Pick a source" )
-									.setSingleChoiceItems(
-											new String[] { "Camera", "Gallerr" },
-											0,
-											new DialogInterface.OnClickListener()
-											{
-												@Override
-												public void onClick(
-														DialogInterface dialog,
-														int which )
-												{
-													Intent intent = new Intent();
-													switch( which )
-													{
-													case 0:
-														// camera
-														// N-TODO
-														break;
-													case 1:
-														// gallery
-														// N-TODO
-														break;
-													}
-													beginUpload( null );
-													dialog.dismiss();
-												}
-											} )
-									.show();
-							return;
-						}
-						beginUpload( null );
-					}
-				} );
+									} ).show();
+					return;
+				}
+				beginUpload( null );
+			}
+		} );
 		return rootView;
 	}
 
@@ -184,15 +163,12 @@ public class RegistrationFragment extends Fragment
 
 		try
 		{
-			startActivityForResult(
-					Intent.createChooser( intent, "Select a File to Upload" ),
-					FILE_SELECT_CODE );
+			startActivityForResult( Intent.createChooser( intent, "Select a File to Upload" ), FILE_SELECT_CODE );
 		}
 		catch( android.content.ActivityNotFoundException ex )
 		{
 			// Potentially direct the user to the Market with a Dialog
-			Toast.makeText( getActivity(), "Please install a File Manager.",
-					Toast.LENGTH_SHORT ).show();
+			Toast.makeText( getActivity(), "Please install a File Manager.", Toast.LENGTH_SHORT ).show();
 		}
 	}
 
@@ -216,8 +192,7 @@ public class RegistrationFragment extends Fragment
 				Cursor cursor = null;
 				try
 				{
-					cursor = getActivity().getContentResolver().query( uri,
-							projection, null, null, null );
+					cursor = getActivity().getContentResolver().query( uri, projection, null, null, null );
 					int column_index = cursor.getColumnIndexOrThrow( "_data" );
 					if( cursor.moveToFirst() )
 					{
@@ -237,8 +212,7 @@ public class RegistrationFragment extends Fragment
 			Log.v( LOG_TAG, "File Path: " + m_filePath );
 			if( m_filePath == null || m_filePath.isEmpty() )
 			{
-				Toast.makeText( getActivity(), "Please select a file!",
-						Toast.LENGTH_LONG ).show();
+				Toast.makeText( getActivity(), "Please select a file!", Toast.LENGTH_LONG ).show();
 				return;
 			}
 			beginUpload( null );
@@ -258,26 +232,21 @@ public class RegistrationFragment extends Fragment
 			{
 				boolean successful = false;
 				HttpClient httpclient = new DefaultHttpClient();
-				HttpPost httppost = new HttpPost(
-						"http://107.161.27.22:5000/api/upload" );
+				HttpPost httppost = new HttpPost( "http://107.161.27.22:5000/api/upload" );
 				try
 				{
-					MultipartEntityBuilder builder = MultipartEntityBuilder
-							.create();
+					MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 					if( m_filePath != null )
 					{
 						File pdfFile = new File( m_filePath );
-						Log.v( LOG_TAG, "Adding file: " + m_filePath
-								+ "File exists: " + pdfFile.exists() );
+						Log.v( LOG_TAG, "Adding file: " + m_filePath + "File exists: " + pdfFile.exists() );
 						builder.addPart( "file", new FileBody( pdfFile ) );
 					}
 					httppost.setEntity( builder.build() );
 					HttpResponse response = httpclient.execute( httppost );
-					Log.e( "test", "SC:"
-							+ response.getStatusLine().getStatusCode() );
-					BufferedReader reader = new BufferedReader(
-							new InputStreamReader( response.getEntity()
-									.getContent(), "UTF-8" ) );
+					Log.e( "test", "SC:" + response.getStatusLine().getStatusCode() );
+					BufferedReader reader = new BufferedReader( new InputStreamReader( response.getEntity()
+							.getContent(), "UTF-8" ) );
 					String s = "", temp; // TODO use SB
 					while( ( temp = reader.readLine() ) != null )
 					{
@@ -312,6 +281,7 @@ public class RegistrationFragment extends Fragment
 		} );
 		t.start();
 	}
+
 	private static interface RegistrationListener
 	{
 		public void onUploadFinished( boolean registrationSuccessful );
