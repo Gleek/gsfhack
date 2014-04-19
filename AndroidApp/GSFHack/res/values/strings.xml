@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">GSFHack</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+      <string-array name="profile_options">
+        <item>Social</item>
+        <item>PDF Resume Upload</item>
+        <item>Phone Call</item>
+        <item>PDF Picture Upload</item>
+        </string-array>
+</resources>
