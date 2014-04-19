@@ -1,9 +1,15 @@
 package com.anmolahuja.gsfhack;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,14 +18,19 @@ import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,17 +46,14 @@ import ch.boye.httpclientandroidlib.impl.client.DefaultHttpClient;
 
 public class RegistrationFragment extends Fragment
 {
-
-	private String name, email, mobile;
-	private ProgressDialog pd;
+	private String m_name, m_email, m_mobile;
 	private String m_filePath = null;
-	private static final int FILE_SELECT_CODE = 1234;
+	private static final int FILE_SELECT_CODE = 11;
+	private static final int PICK_IMAGE = 21;
+	private static final int TAKE_PIC = 22;
+	private Bitmap m_bitmap;
 
 	private static final String LOG_TAG = "RegFragment";
-
-	public RegistrationFragment()
-	{
-	}
 
 	@Override
 	public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState )
@@ -64,12 +72,12 @@ public class RegistrationFragment extends Fragment
 			@Override
 			public void onClick( View v )
 			{
-				name = ( (EditText) rootView.findViewById( R.id.et_name ) ).getText().toString();
-				email = ( (EditText) rootView.findViewById( R.id.et_email ) ).getText().toString();
-				mobile = ( (EditText) rootView.findViewById( R.id.et_mobileno ) ).getText().toString();
+				m_name = ( (EditText) rootView.findViewById( R.id.et_name ) ).getText().toString();
+				m_email = ( (EditText) rootView.findViewById( R.id.et_email ) ).getText().toString();
+				m_mobile = ( (EditText) rootView.findViewById( R.id.et_mobileno ) ).getText().toString();
 
-				if( name == null || name.isEmpty() || email == null || email.isEmpty() || mobile == null
-						|| mobile.isEmpty() )
+				if( m_name == null || m_name.isEmpty() || m_email == null || m_email.isEmpty() || m_mobile == null
+						|| m_mobile.isEmpty() )
 				{
 					Toast.makeText( getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT ).show();
 					return;
@@ -81,12 +89,7 @@ public class RegistrationFragment extends Fragment
 					break;
 				case 1:
 					// PDF
-					// C-TODO hardcoding for testing
-					m_filePath = "/sdcard/xkcd-24.jpeg";
-					/*
-					 * if (m_filePath == null || m_filePath.isEmpty()) {
-					 * showFileChooser(); return; }
-					 */
+					showFileChooser();
 					break;
 				case 2:
 					// TODO show warning about call rates
@@ -119,10 +122,10 @@ public class RegistrationFragment extends Fragment
 					break;
 
 				case 3:
-					// pDF Pic Export
+					// resume Pic Export
 					AlertDialog.Builder b = new AlertDialog.Builder( getActivity() );
 					b.setTitle( "Pick a source" )
-							.setSingleChoiceItems( new String[] { "Camera", "Gallerr" }, 0,
+							.setSingleChoiceItems( new String[] { "Camera", "Gallery" }, 0,
 									new DialogInterface.OnClickListener()
 									{
 										@Override
@@ -133,20 +136,30 @@ public class RegistrationFragment extends Fragment
 											{
 											case 0:
 												// camera
-												// N-TODO
+												intent.setAction( MediaStore.ACTION_IMAGE_CAPTURE );
+												startActivityForResult( intent, TAKE_PIC );
 												break;
 											case 1:
 												// gallery
-												// N-TODO
+												try
+												{
+													intent.setType( "image/*" );
+													intent.setAction( Intent.ACTION_GET_CONTENT );
+													startActivityForResult(
+															Intent.createChooser( intent, "Select Picture" ),
+															PICK_IMAGE );
+												}
+												catch( Exception e )
+												{
+													e.printStackTrace();
+												}
 												break;
 											}
-											beginUpload( null );
 											dialog.dismiss();
 										}
 									} ).show();
 					return;
 				}
-				beginUpload( null );
 			}
 		} );
 		return rootView;
@@ -176,15 +189,16 @@ public class RegistrationFragment extends Fragment
 	public void onActivityResult( int requestCode, int resultCode, Intent data )
 	{
 		Log.v( LOG_TAG, "In on acitivyt reslt, rc: " + resultCode );
+		m_filePath = null;
 		if( resultCode != Activity.RESULT_OK )
 			return;
 
-		switch( resultCode )
+		switch( requestCode )
 		{
 		case FILE_SELECT_CODE: // ANMLINK[1]
 			// Get the Uri of the selected file
 			Uri uri = data.getData();
-			Log.d( "REgfragment", "File Uri: " + uri.toString() );
+			Log.d( LOG_TAG, "File Uri: " + uri.toString() );
 			// Get the path
 			if( "content".equalsIgnoreCase( uri.getScheme() ) )
 			{
@@ -215,15 +229,130 @@ public class RegistrationFragment extends Fragment
 				Toast.makeText( getActivity(), "Please select a file!", Toast.LENGTH_LONG ).show();
 				return;
 			}
-			beginUpload( null );
+			break;
+
+		case TAKE_PIC:
+		{
+			InputStream stream = null;
+			File sdDirectory = Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_PICTURES );
+			File tempImageDir = new File( sdDirectory, "Shine.com" );
+			if( !tempImageDir.exists() && !tempImageDir.mkdirs() )
+			{
+				Log.e( LOG_TAG, "Couldn't create directory to save images!" );
+				return;
+			}
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyymmddhhmmss" );
+			String date = dateFormat.format( new Date() );
+			String photoFile = "Resume_" + date + ".jpg";
+			String filePath = tempImageDir.getPath() + File.separator + photoFile;
+
+			try
+			{
+				if( m_bitmap != null )
+					m_bitmap.recycle();
+				if( data.getData() == null )
+					return; // TODO
+				stream = getActivity().getContentResolver().openInputStream( data.getData() );
+
+				m_bitmap = BitmapFactory.decodeStream( stream );
+				File imageFile = new File( filePath );
+
+				try
+				{
+					final FileOutputStream fos = new FileOutputStream( imageFile );
+					final BufferedOutputStream bos = new BufferedOutputStream( fos, 1024 );
+					m_bitmap.compress( CompressFormat.PNG, /** quality **/
+					60, bos ); // TODO quality ok for character recog?
+					bos.flush();
+					m_filePath = filePath;
+					bos.close();
+					fos.close(); // TODO needed? BOS closes the "target" stream
+				}
+				catch( IOException e )
+				{
+					e.printStackTrace();
+				}
+
+			}
+			catch( FileNotFoundException e )
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				if( stream != null )
+				{
+					try
+					{
+						stream.close();
+					}
+					catch( IOException e )
+					{
+						e.printStackTrace();
+					}
+				}
+			}
 			break;
 		}
+
+		case PICK_IMAGE:
+		{
+			// http://stackoverflow.com/questions/11049270/select-image-from-gallery-and-save-it-for-future-use
+			Uri selectedImageUri = data.getData();
+			try
+			{
+				// OI FILE Manager
+				String filemanagerstring = selectedImageUri.getPath();
+				// MEDIA GALLERY
+				String selectedImagePath = null;
+				String[] projection = { MediaStore.Images.Media.DATA };
+				Cursor cursor = getActivity().managedQuery( selectedImageUri, projection, null, null, null );
+				if( cursor != null )
+				{
+					int column_index = cursor.getColumnIndexOrThrow( MediaStore.Images.Media.DATA );
+					cursor.moveToFirst();
+					selectedImagePath = cursor.getString( column_index );
+				}
+
+				if( selectedImagePath != null )
+				{
+					m_filePath = selectedImagePath;
+				}
+				else if( filemanagerstring != null )
+				{
+					m_filePath = filemanagerstring;
+				}
+				else
+				{
+					Toast.makeText( getActivity(), "Unknown path", Toast.LENGTH_LONG ).show();
+					Log.e( "Bitmap", "Unknown path" );
+				}
+			}
+			catch( Exception e )
+			{
+				Toast.makeText( getActivity(), "Internal error", Toast.LENGTH_LONG ).show();
+				Log.e( e.getClass().getName(), e.getMessage(), e );
+			}
+			break;
+		}
+
+		}
+		if( m_filePath != null )
+		{
+			Log.v( LOG_TAG, "In activityResult, filepath:" + m_filePath );
+			beginUpload( null );
+		}
+		else
+			Log.e( LOG_TAG, "Null path!" );
+
 	}
 
 	private void beginUpload( final RegistrationListener listener )
 	{
-		pd = new ProgressDialog( getActivity() );
+		final ProgressDialog pd = new ProgressDialog( getActivity() );
 		pd.setTitle( "Registering..." );
+		pd.setCancelable( false );
 		pd.show();
 		Thread t = new Thread( new Runnable()
 		{
@@ -242,6 +371,8 @@ public class RegistrationFragment extends Fragment
 						Log.v( LOG_TAG, "Adding file: " + m_filePath + "File exists: " + pdfFile.exists() );
 						builder.addPart( "file", new FileBody( pdfFile ) );
 					}
+					else
+						Log.v( LOG_TAG, "File path is null" );
 					httppost.setEntity( builder.build() );
 					HttpResponse response = httpclient.execute( httppost );
 					Log.e( "test", "SC:" + response.getStatusLine().getStatusCode() );
