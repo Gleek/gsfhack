@@ -5,11 +5,15 @@ from werkzeug import secure_filename
 from flask.ext.babel import gettext
 from app import app
 import kookoo
+
+
 @app.route('/')
 @app.route('/index')
 def index():
     return "Hello, World!"
 
+
+@app.route('/api/', methods=['GET'])
 @app.route('/api', methods=['GET'])
 def index():
     if request.method == 'GET':
@@ -17,20 +21,22 @@ def index():
         output = {'greetings':'Welcome to api'}
         json_results.append(output)
     return jsonify(items=json_results)
+
+
+
 @app.route('/api/kookoo', methods=['GET','POST'])
 @app.route('/api/kookoo/', methods=['GET','POST'])
 def ProcessKooKooResponse():
     r = kookoo.Response()
+    curtime = str(time.time())
+    dic ={'Please say your name':'name'+curtime,
+          'Please Say your qualification':'qual'+curtime}
     if request.values.get("event") == "NewCall":
         r.addPlayText("Welcome to Shine dot com registration service")
-        curtime = str(time.time())
-        name= curtime+"name"
-        qual = curtime+"qual"
         phone_number=request.values.get("called_number")
-        r.addPlayText("Please say your name")
-        r.addRecord(name)
-        r.addPlayText("Please Say your qualification")
-        r.addRecord(qual)
+	for i , j in dic.items():
+        	r.addPlayText(i)
+        	r.addRecord(j)
         r.addPlayText("Thank You")
         r.addHangup()
     return str(r).replace("<Record","<Record format=\"wav\" silence=\"3\" maxduration=\"5\"")
