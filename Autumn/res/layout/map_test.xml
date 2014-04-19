@@ -1,0 +1,43 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <LinearLayout 
+	    android:orientation="horizontal"
+	    android:id="@+id/topbar"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="7dp"
+	    android:background="@drawable/blue_gradient"
+    >
+    	<ImageButton
+    	    android:id="@+id/back_btn"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:src="@drawable/icon_down_left"
+    	    android:contentDescription="@string/back_btn_desc"
+    	    android:background="@null" />
+    	    	
+    	<TextView
+			android:id="@+id/textview"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:textColor="#ffffff"
+			android:textSize="14sp"
+			android:text="@string/people_nearby_text"
+			android:layout_marginLeft="5dp"
+			android:textStyle="bold"
+		/>
+    </LinearLayout>
+    
+    <fragment
+        android:id="@+id/map"
+    	android:layout_below="@id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.google.android.gms.maps.SupportMapFragment" />
+
+</RelativeLayout> 

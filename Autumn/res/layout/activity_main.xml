@@ -1,0 +1,104 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    android:orientation="vertical"
+    >         
+    
+    <LinearLayout 
+	    android:orientation="horizontal"
+	    android:id="@+id/topbar"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="7dp"
+	    android:background="@drawable/blue_gradient"
+    >
+        <TextView 
+			android:id="@+id/textview"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:textColor="#ffffff"
+			android:textSize="14sp"
+			android:text="@string/app_name"
+			android:layout_marginLeft="5dp"
+			android:textStyle="bold"
+		/>
+    </LinearLayout>  
+    
+    <ImageView
+        android:id="@+id/img_logo"
+        android:src="@drawable/logo"
+        android:contentDescription="@string/logo_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+		android:layout_below="@id/topbar"
+        android:layout_marginTop="20dp" />
+    
+    <TextView
+        android:layout_below="@id/img_logo"
+        android:layout_marginTop="20dp"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="@string/app_description" />
+    
+    <ImageButton
+        android:id="@+id/nearby_btn"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:src="@drawable/see_people_around"
+	    android:background="@null"
+	    android:contentDescription="@string/see_around_text"
+	    android:layout_centerInParent="true"
+	    android:layout_alignParentBottom="true"
+	    android:layout_marginBottom="10dip"
+	    android:text="@string/view_people_text"
+	    android:scaleType="centerInside"
+	    android:visibility="visible" />
+    
+    <ImageButton
+        android:id="@+id/update_status_btn"
+        android:src="@drawable/view_profile"
+        android:layout_above="@id/nearby_btn"
+        android:background="@null"
+        android:contentDescription="@string/view_profile_text"
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_marginBottom="10dip"
+	    android:text="@string/view_profile_text"
+	    android:gravity="center_horizontal"
+	    android:visibility="visible" />
+
+<com.facebook.widget.LoginButton
+    xmlns:fb="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="50dp"
+    android:contentDescription="@string/login_text"
+    android:gravity="center_horizontal"
+    android:scaleType="centerInside"
+    android:visibility="invisible"
+    fb:login_text=""
+    fb:logout_text="" />
+
+<ImageButton
+    android:id="@+id/btn_login_with_linkedin"
+    android:contentDescription="@string/login_linkedin_desc"
+    android:layout_above="@id/login_button"
+    android:layout_centerInParent="true"
+    android:layout_marginBottom="20sp"
+    android:src="@drawable/linkedin_login"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content"
+    android:visibility="invisible"
+    android:background="@null" />
+
+</RelativeLayout>

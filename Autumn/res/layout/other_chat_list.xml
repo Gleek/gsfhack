@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#ffffff"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginBottom="5dp" >
+	    
+	 <LinearLayout
+        android:id="@+id/wrapper"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bubble_green" >
+
+        <TextView
+            android:id="@+id/chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dip"
+            android:paddingLeft="10dip"
+            android:textColor="@android:color/primary_text_light" />
+    </LinearLayout>
+	
+	 <ImageView
+	        android:src="@drawable/random_user"
+	        android:layout_width="70dp"
+	        android:layout_height="70dp"
+	        android:layout_marginRight="10dp"
+	        android:layout_gravity="bottom"
+	        android:id="@+id/profile_pic"
+	        android:contentDescription="@string/profile_pic_desc" />
+
+</LinearLayout>

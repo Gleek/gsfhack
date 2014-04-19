@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Autumn</string>
+    <string name="app_description">Autumn helps you meeting new people, just around you.</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="app_id">489769937771593</string>
+    <string name="login_text">Login</string>
+    <string name="people_nearby_text">Recommended People</string>
+    <string name="logo_desc">Autumn Logo</string>
+    <string name="profile_pic_desc">Profile Pic</string>
+    <string name="icon_arrow_desc">View More</string>
+    <string name="chat_desc">Chat</string>
+    <string name="location_pic_desc">User Location</string>
+    <string name="chat_text">Chat</string>
+    <string name="view_profile_text">View Profile</string>
+    <string name="view_people_text">View Who\'re Around You</string>
+    <string name="update_status_text">Update Status</string>
+    <string name="write_chat_text">Enter Message Here</string>
+    <string name="status_hint_text">Your Status on Autumn</string>
+    <string name="chat_button_text">Send</string>
+    <string name="login_linkedin_desc">Login with LinkedIn</string>
+    <string name="back_btn_desc">Back</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="howdy_text">Hey!</string>
+    <string name="update_status_text">Update Status</string>
+    <string name="view_profile_text">View Profile</string>
+    <string name="see_around_text">See People around</string>
+    <string name="view_all_txt">View More People</string>
+</resources>

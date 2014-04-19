@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:orientation="vertical"
+    android:background="#ffffff" >
+    
+    <LinearLayout 
+	    android:orientation="horizontal"
+	    android:id="@+id/topbar"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:padding="7dp"
+	    android:background="@drawable/blue_gradient"
+    >
+    	<ImageButton
+    	    android:id="@+id/back_btn"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="wrap_content"
+    	    android:src="@drawable/icon_down_left"
+    	    android:contentDescription="@string/back_btn_desc"
+    	    android:background="@null" />
+    	    	
+    	<TextView
+			android:id="@+id/txt_header"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"
+			android:layout_gravity="center_vertical"
+			android:textColor="#ffffff"
+			android:textSize="14sp"
+			android:text="@string/howdy_text"
+			android:layout_marginLeft="5dp"
+			android:textStyle="bold"
+		/>
+    </LinearLayout>
+	
+    <LinearLayout
+        android:id="@+id/ll_profile_basic"
+        android:layout_below="@id/topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="5dip"
+        android:layout_marginLeft="5dip" >
+        
+        <ImageView
+            android:id="@+id/profile_pic"
+            android:src="@drawable/random_user"
+            android:contentDescription="@string/profile_pic_desc"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@null" /> 
+        
+         <RelativeLayout
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="5dip" >
+            
+            <TextView
+                android:id="@+id/txt_name"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            
+            <TextView
+                android:id="@+id/txt_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dip"
+                android:layout_below="@id/txt_name"
+                android:textColor="#000000"
+                android:textSize="15sp"	
+                android:drawableLeft="@drawable/icon_quote_green" />
+                            
+        </RelativeLayout>       
+            
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/ll_profile_details"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+		android:layout_marginLeft="10dip"
+		android:layout_marginTop="15dip"
+		android:orientation="vertical"
+        android:layout_below="@id/ll_profile_basic" >
+        
+        <TextView
+            android:id="@+id/txt_job"
+            android:textColor="#050505"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/icon_job" />
+        
+        <TextView
+            android:id="@+id/txt_study"
+            android:textColor="#050505"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/icon_study" />
+        
+    </LinearLayout>
+
+	<ImageButton
+		android:id="@+id/logout"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/ll_profile_basic"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="15dip"
+		android:contentDescription="@string/chat_desc"
+		android:src="@drawable/icon_logout"
+		android:background="@null" />
+	
+	<ListView
+	    android:id="@+id/statuses"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@id/ll_profile_details"
+	    android:layout_marginTop="10dip"
+	    android:padding="10dip"
+	    android:divider="@null"
+	    android:clipToPadding="false" >	    
+	    
+	</ListView>
+
+	<ImageButton
+	    android:id="@+id/update_status_btn"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:layout_below="@+id/ll_profile_details"
+	    android:layout_marginRight="5dip"
+	    android:background="@null"
+	    android:contentDescription="@string/update_status_text"
+	    android:src="@drawable/update_status" />
+	
+</RelativeLayout>
