@@ -10,5 +10,43 @@
         <item>PDF Resume Upload</item>
         <item>Phone Call</item>
         <item>PDF Picture Upload</item>
+        <item>From voice based Inputs</item>
         </string-array>
+        
+      
+      <string-array name="profile_questions">
+          <item>Enter your First Name</item>
+          <item>Enter your Middle Name</item>
+          <item>Enter your Last Name</item>
+          <item>Enter your Date Of Birth</item>
+          <item>Enter your Gender</item>
+          <item>Enter your Alternate Email</item>
+          <item>Enter your City</item>
+          <item>Enter your State</item>
+          <item>Enter your Country</item>
+          <item>Enter your ZipCode</item>
+          <item>Enter your Qualification</item>
+          <item>Enter your University</item>
+          <item>Enter your Degree</item>
+          <item>Enter your Skills</item>
+          <item>Enter your total experience in Months</item>
+      </string-array>
+      
+      <string-array name="profile_question_ids">
+          <item>FirstName</item>
+          <item>Middlename</item>
+          <item>LastName</item>
+          <item>DateOfBirth</item>
+          <item>Gender</item>
+          <item>AlternateEmail</item>
+          <item>City</item>
+          <item>State</item>
+          <item>Country</item>
+          <item>ZipCode</item>
+          <item>Qualification</item>
+          <item>University</item>
+          <item>Degree</item>
+          <item>Skills</item>
+          <item>ExperienceInMonths</item>
+      </string-array>
 </resources>

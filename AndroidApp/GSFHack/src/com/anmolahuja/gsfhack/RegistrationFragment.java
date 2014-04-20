@@ -86,6 +86,9 @@ public class RegistrationFragment extends Fragment
 				{
 				case 0:
 					// Social TODO
+//					Intent intent = new Intent("co.autumn.android.MainActivity");
+					Intent intent = getActivity().getPackageManager().getLaunchIntentForPackage("co.autumn.android");
+					startActivity(intent);
 					break;
 				case 1:
 					// PDF
@@ -158,7 +161,11 @@ public class RegistrationFragment extends Fragment
 											dialog.dismiss();
 										}
 									} ).show();
-					return;
+					break;
+				case 4:
+					Intent newIntent = new Intent(getActivity(), VoiceRegisteration.class);
+					startActivity(newIntent);
+					break;
 				}
 			}
 		} );
