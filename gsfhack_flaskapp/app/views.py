@@ -7,6 +7,47 @@ import kookoo
 import pickle
 import sys, os, json, urllib2, urllib, time
 import requests
+import requests, json, os.path
+import mechanize, cookielib, urllib2
+from bs4 import BeautifulSoup
+
+def get_xml_data(filename):
+	base_url = 'http://resumeparser.rchilli.com/'
+	cookies = 'JSESSIONID=FD1B3917F62E1691D50F96FFF288B0EB; yyy=%20--%20-%20; UName=123; UEmail="sharmapankaj1992@gmail.com"; UPhone=1234567890; UVarified=yes'
+	user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:25.0) Gecko/20100101 Firefox/25.0'
+	# Browser
+	br = mechanize.Browser()
+
+	# Cookie Jar
+	cj = cookielib.LWPCookieJar()
+	br.set_cookiejar(cj)
+
+	# Browser options
+	br.set_handle_equiv(True)
+	br.set_handle_gzip(True)
+	br.set_handle_redirect(True)
+	br.set_handle_referer(True)
+	br.set_handle_robots(False)
+
+	# Follows refresh 0 but not hangs on refresh > 0
+	br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+	br.addheaders = [('User-Agent', user_agent), ('Cookie', cookies)]
+	br.open('http://resumeparser.rchilli.com/RchilliDemo.jsp?method=2')
+	br.select_form(nr=0)
+	br.form.find_control(name='fileUpload', type='file').add_file(
+	    open(filename, 'rb'), 'application/pdf', os.path.basename(filename))
+	br.form.set_all_readonly(False)
+	br.addheaders = [('User-Agent', user_agent), ('Cookie', cookies)]
+	br.submit()
+	out = br.response().read()
+	# print out
+	soup = BeautifulSoup(out)
+	xml_file = base_url + soup.find('span', {'id': 'filePath'}).text.strip()
+	# print xml_file
+	response = urllib2.urlopen(xml_file)
+	return response.read()
+
+
 @app.route('/')
 @app.route('/index')
 @app.route('/api/', methods=['GET'])
@@ -55,7 +96,19 @@ def getfile(url):
         print url
         return 0
 '''
+def getspeechdata(var):
+	
+	stri = "/home/engineer/htdocs/gsfhack/"+str(var)+".wav"
+	stril ="/home/engineer/htdocs/gsfhack/"+str(var)
+	ms = 'curl "https://api.att.com/speech/v3/speechToText" \
+    --header "Authorization: Bearer WhOv12MXe4Wlduezi7M3hioHUrko6fO9" \
+    --header "Accept: application/json" \
+    --header "Content-Type: audio/wav" \
+    --data-binary @'+stri+' \
+    --request POST   > '+stril+'.txt'
+	os.system(ms)
 
+	return var
 @app.route('/api/kookoo/process', methods=['GET','POST'])
 @app.route('/api/kookoo/process/', methods=['GET','POST'])
 def ProcessSong():
@@ -68,13 +121,8 @@ def ProcessSong():
 		dici = lis[str(request.values.get("no"))]
                 print dici
 		for k,m in dici.iteritems():
-			var  ="http://recordings.kookoo.in/nayyar_vipul/"+str(m)+".wav"
-			#return var 
-			#print m
-			fileh = getfile(var)
-                        if fileh == 0:
-                            return "an error occured in fetching the file"
-                        dici[k]= transcribe_audio_file(fileh)
+			
+			dici[k] = getspeechdata(m)
 		return jsonify(dici)
 	else:
 		return stri+"</ul>"
@@ -106,11 +154,21 @@ def ProcessKooKooResponse():
     json.dump( lis, open( "save.json", "w" ) )
     return str(r).replace("<Record","<Record format=\"wav\" silence=\"3\" maxduration=\"5\"")
     
+
+@app.route('/api/process/pdf', methods=['GET','POST'])
+@app.route('/api/process/pdf/', methods=['GET','POST'])
+
+def processPdf():
+	name = request.values.get("name")
+	stri ="/home/engineer/htdocs/gsfhack/uploads/"
+	s=str(stri+name)
+	return get_xml_data(s)
+
 @app.route('/api/upload/', methods=['POST'])
 @app.route('/api/upload', methods=['POST'])
 def upload():
     if request.method == 'POST':
-        upload_folder = os.path.join(os.getcwd(),'/uploads/')
+        upload_folder = os.path.join(os.getcwd(),'uploads/')
         if not os.path.exists(upload_folder):
             os.mkdir(upload_folder)
             return upload_folder
@@ -122,8 +180,15 @@ def upload():
         output = {
             'name': filename,
             'status': 'success',
-	    'url' : 'http://107.161.27.22/gsfhack/uploads/'+str(filename)
-        }
+	    'url' : 'http://107.161.27.22/gsfhack/uploads/'+str(filename),
+	    'path': upload_folder+str(filename)
+	}
+	if filename.endswith('.png') or filename.endswith('.jpg') or filename.endswith('.gif'):
+		print filename 
+		os.system("pwd")
+		stri = "cd uploads && wget http://107.161.27.22/gsfhack/uploads/process.php?file="+str(filename)+" -O "+str(filename)+".rtf && cd .."
+		os.system(stri)
+		os.system("pwd")
         files.append(output)
     return jsonify(files=files)
 @app.route('/api/test', methods=['GET'])
