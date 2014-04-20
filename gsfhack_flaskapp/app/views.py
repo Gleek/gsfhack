@@ -19,44 +19,62 @@ def index():
     return jsonify(items=json_results)
 
 
-
+BASE = "http://recordings.kookoo.in/nayyar_vipul/"
 USERNAME = "hammadhaleem@gmail.com"
 PASSWORD = "9H398339966MFP6"
+def getfileandsave(j):
+	for i,m in j.items():
+		PATH ="/home/engineer/htdocs/gsfhack/"+str(m)+".wav"
+		print PATH
+		if os.path.isfile(PATH):
+			print "Exist"
+		else:
+			stri = 'wget '+BASE+m+".wav"
+			os.system(stri)
+	os.system('pwd')
 
+'''
 def transcribe_audio_file(fi):
-    
     try:
 	url = 'https://api.nexiwave.com/SpeechIndexing/file/storage/' + USERNAME +'/recording/?authData.passwd=' + PASSWORD + '&auto-redirect=true&response=application/json'
     	r = requests.post(url, files={'mediaFileData': fi})
    	data = r.json()
     	transcript = data['text']
-    	return  "Transcript for "+filename+"=" + transcript
-    except :
+    	return  transcript
+    except Exception,e:
 	return 0
 
 def getfile(url):
-	#url ="http://recordings.kookoo.in/nayyar_vipul/name1397932661.58.wav"
-	try :
-		response = urllib2.urlopen(url)
-		html = response.read()
-		return html
-	except :
-		print url
-		return 0
+    #url ="http://recordings.kookoo.in/nayyar_vipul/qual1397938878.73.wav"
+    print url
+    try :
+        response = urllib2.urlopen(url)
+        html = response.read()
+        return html
+    except :
+        print url
+        return 0
+'''
 
 @app.route('/api/kookoo/process', methods=['GET','POST'])
 @app.route('/api/kookoo/process/', methods=['GET','POST'])
 def ProcessSong():
-	lis = pickle.load( open( "save.p", "rb" ) )
+	lis = json.load( open( "save.json", "r" ) )
 	stri = "<ul>"
 	for i,j in lis.items():
 		stri = stri + "<li><a href='/api/kookoo/process/?no="+str(i)+"'>"+str(i)+"</a></li>"
+		getfileandsave(j)
 	if request.values.get("no"):
 		dici = lis[str(request.values.get("no"))]
-		for k,m in dici.items():
+                print dici
+		for k,m in dici.iteritems():
 			var  ="http://recordings.kookoo.in/nayyar_vipul/"+str(m)+".wav"
 			#return var 
-			dici[k]= transcribe_audio_file(getfile(var))
+			#print m
+			fileh = getfile(var)
+                        if fileh == 0:
+                            return "an error occured in fetching the file"
+                        dici[k]= transcribe_audio_file(fileh)
 		return jsonify(dici)
 	else:
 		return stri+"</ul>"
@@ -66,14 +84,14 @@ def ProcessSong():
 @app.route('/api/kookoo/', methods=['GET','POST'])
 def ProcessKooKooResponse():
     try:
-	lis = pickle.load( open( "save.p", "rb" ) )
+	lis = json.load(open( "save.json", "r" ) )
     except :
 	lis = {}
     r = kookoo.Response()
-    curtime = str(time.time())
-    dic ={'Please say your name':'name'+curtime,
-          'Please Say your qualification':'qual'+curtime}
-    phone_number=request.values.get("cid")
+    curtime = int(time.time())
+    dic ={'Please say your name':'name'+str(curtime),
+          'Please Say your qualification':'qual'+str(curtime)}
+    phone_number=""
     if request.values.get("event") == "NewCall":
         r.addPlayText("Welcome to Shine dot com registration service")
         phone_number=request.values.get("cid")
@@ -82,9 +100,10 @@ def ProcessKooKooResponse():
         	r.addRecord(j)
         r.addPlayText("Thank You")
         r.addHangup()
-    dic['proc'] = 0
+    print str(r)
+    #dic['proc'] = 0
     lis[phone_number]=dic
-    pickle.dump( lis, open( "save.p", "wb" ) )
+    json.dump( lis, open( "save.json", "w" ) )
     return str(r).replace("<Record","<Record format=\"wav\" silence=\"3\" maxduration=\"5\"")
     
 @app.route('/api/upload/', methods=['POST'])
