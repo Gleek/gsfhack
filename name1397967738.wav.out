@@ -1,0 +1,1 @@
+{"Recognition": {"Info": {"metrics": {"audioBytes": 34652, "audioTime": 2.16000009}}, "NBest": [{"Confidence": 0.01, "Grade": "accept", "Hypothesis": "ammo", "LanguageId": "en-US", "ResultText": "Ammo.", "WordScores": [0], "Words": ["Ammo."]}], "ResponseId": "28b5403bd698e126958544e76001f96c", "Status": "OK"}}

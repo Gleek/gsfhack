@@ -1,0 +1,1 @@
+{"Recognition": {"Info": {"metrics": {"audioBytes": 45020, "audioTime": 2.80999994}}, "NBest": [{"Confidence": 0.05, "Grade": "accept", "Hypothesis": "google", "LanguageId": "en-US", "ResultText": "Google.", "WordScores": [0.05], "Words": ["Google."]}], "ResponseId": "29d4f6570a8a2227958578870be4ee5c", "Status": "OK"}}
