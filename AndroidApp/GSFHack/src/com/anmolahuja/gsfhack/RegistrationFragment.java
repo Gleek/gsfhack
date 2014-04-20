@@ -58,6 +58,7 @@ public class RegistrationFragment extends Fragment
 	@Override
 	public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState )
 	{
+		final String fields[] = new String[3];
 		final View rootView = inflater.inflate( R.layout.registration_activity, container, false );
 		final Spinner spinner = (Spinner) rootView.findViewById( R.id.spn_profilemethod );
 		final ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource( getActivity(),
@@ -72,16 +73,19 @@ public class RegistrationFragment extends Fragment
 			@Override
 			public void onClick( View v )
 			{
-				m_name = ( (EditText) rootView.findViewById( R.id.et_name ) ).getText().toString();
-				m_email = ( (EditText) rootView.findViewById( R.id.et_email ) ).getText().toString();
-				m_mobile = ( (EditText) rootView.findViewById( R.id.et_mobileno ) ).getText().toString();
+				fields[0] = m_name = ( (EditText) rootView.findViewById( R.id.et_name ) ).getText().toString();
+				fields[1] = m_email = ( (EditText) rootView.findViewById( R.id.et_email ) ).getText().toString();
+				fields[2] = m_mobile = ( (EditText) rootView.findViewById( R.id.et_mobileno ) ).getText().toString();
 
-				if( m_name == null || m_name.isEmpty() || m_email == null || m_email.isEmpty() || m_mobile == null
-						|| m_mobile.isEmpty() )
+				for( final String field : fields )
 				{
-					Toast.makeText( getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT ).show();
-					return;
+					if( field == null || field.isEmpty() )
+					{
+						Toast.makeText( getActivity(), "Please fill in all the fields", Toast.LENGTH_SHORT ).show();
+						return;
+					}
 				}
+
 				switch( spinner.getSelectedItemPosition() )
 				{
 				case 0:
