@@ -159,10 +159,21 @@ def ProcessKooKooResponse():
 @app.route('/api/process/pdf/', methods=['GET','POST'])
 
 def processPdf():
-	name = request.values.get("name")
-	stri ="/home/engineer/htdocs/gsfhack/uploads/"
-	s=str(stri+name)
-	return get_xml_data(s)
+	stri = "<ul>"
+        lis = os.listdir("/home/engineer/htdocs/gsfhack/uploads/")
+	for i in lis:
+		stri = stri+"<li><a href='/api/process/pdf/?name="+str(i)+"'>"+str(i)+"</a></li>"
+		
+	if request.values.get("name"):
+                name = request.values.get("name")
+                stri ="/home/engineer/htdocs/gsfhack/uploads/"
+                s=str(stri+name)
+                return get_xml_data(s)
+		
+	else:
+		return stri+"</ul>"
+	 
+        
 
 @app.route('/api/upload/', methods=['POST'])
 @app.route('/api/upload', methods=['POST'])
