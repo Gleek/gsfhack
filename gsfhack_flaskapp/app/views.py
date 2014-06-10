@@ -61,8 +61,8 @@ def index():
 
 
 BASE = "http://recordings.kookoo.in/nayyar_vipul/"
-USERNAME = "hammadhaleem@gmail.com"
-PASSWORD = "9H398339966MFP6"
+USERNAME = "username"
+PASSWORD = "password"
 def getfileandsave(j):
 	for i,m in j.items():
 		PATH ="/home/engineer/htdocs/gsfhack/"+str(m)+".wav"
